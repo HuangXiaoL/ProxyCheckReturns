@@ -14,4 +14,5 @@ func main()  {
 }
 func requestOutput(w http.ResponseWriter, r *http.Request)  {
 	log.Println(w.Header())
+	log.Println(r.Header)
 }
