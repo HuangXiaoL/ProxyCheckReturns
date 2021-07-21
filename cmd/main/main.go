@@ -1,17 +1,18 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/go-chi/chi/v5"
+	"log"
 	"net/http"
-	"strings"
 )
 
 type ReturnData struct {
 	RequestAddress string `json:"request_address"`// 发起IP
-	RequestHeader string `json:"request_header"`//请求头
+	RequestHeader map[string][]string `json:"request_header"`//请求头
 }
 func main()  {
-	if err := http.ListenAndServe("0.0.0.0:8082", rout()); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:8088", rout()); err != nil {
 		panic("Web服务初始化.....失败")
 	}
 
@@ -26,11 +27,13 @@ func rout() *chi.Mux {
 func requestOutput(w http.ResponseWriter, r *http.Request)  {
 	res:=ReturnData{}
 	res.RequestAddress=r.RemoteAddr
-
-	for k,v:=range r.Header{
-		res.RequestHeader=res.RequestHeader+k+"=>"+strings.Join(v, ", ")
-//log.Println(k,"=>",v)
+	res.RequestHeader=r.Header
+	log.Println(res)
+	re,err:=json.Marshal(res)
+	if err!=nil {
+		w.WriteHeader(500)
 	}
+	w.Write(re)
 
 
 
